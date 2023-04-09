@@ -6,75 +6,86 @@ import { Post } from 'src/app/models/Post';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, Input } from '@angular/core';
 
-describe('PostComponent', () => {
+
+
+describe('Posts Component', () => {
+  let POSTS: Post[];
   let component: PostComponent;
-  let fixture: ComponentFixture<PostComponent>;
-  let posts: Post[] = [];
   let mockPostService: any;
-  beforeEach(async () => {
-    mockPostService = jasmine.createSpyObj(['getPost', 'deletePost']);
-    await TestBed.configureTestingModule({
-      providers: [
-        PostComponent,
-        {
-          provide: PostService,
-          useValue: mockPostService
-        },
-      ],
-    }).compileComponents();
+  let fixture: ComponentFixture<PostComponent>;
+  @Component({
+    selector: 'app-single-post',
+    template: '<div></div>',
+  })
+  class FakeSinglePostComponent {
+    @Input() post!: Post;
+  }
 
-
-    // fixture = TestBed.createComponent(PostComponent);
-    // component = fixture.componentInstance;
-    component = TestBed.inject(PostComponent);
-    // fixture.detectChanges();
-    // component = new PostComponent(mockPostService);
-    posts = [
+  beforeEach(() => {
+    POSTS = [
       {
         id: 1,
-        userId: 1,
-        body: 'dummy body 1',
-        title: 'dummy title 1'
+        body: 'body 1',
+        title: 'title 1',
+        userId: 1
       },
       {
         id: 2,
-        userId: 1,
-        body: 'dummy body 1',
-        title: 'dummy title 1'
+        body: 'body 2',
+        title: 'title 2',
+        userId: 1
       },
       {
         id: 3,
-        userId: 1,
-        body: 'dummy body 1',
-        title: 'dummy title 1'
-      }
+        body: 'body 3',
+        title: 'title 3',
+        userId: 1
+      },
     ];
 
+    mockPostService = jasmine.createSpyObj(['getPost', 'deletePost']);
+
+    TestBed.configureTestingModule({
+      declarations: [PostComponent, FakeSinglePostComponent],
+      providers: [
+        {
+          provide: PostService,
+          useValue: mockPostService,
+        },
+      ],
+    });
+
+    fixture = TestBed.createComponent(PostComponent);
+    component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should set posts from the service directly', () => {
+    mockPostService.getPost.and.returnValue(of(POSTS));
+    fixture.detectChanges(); // this triggers component `ngOnInit()`
+    expect(component.posts.length).toBe(3);
   });
 
   describe('delete', () => {
     beforeEach(() => {
       mockPostService.deletePost.and.returnValue(of(true));
-      component.posts = posts;
-      component.deletePost(posts[0]);
+      component.posts = POSTS;
     });
-
-    it('should delete the selected post from the posts', () => {
+    it('should delete the selected Post from the posts', () => {
+      component.deletePost(POSTS[1]);
       expect(component.posts.length).toBe(2);
     });
 
-    it('should delete the actual post', () => {
-      component.posts.forEach((p: Post) => {
-        expect(p.id).not.toBe(posts[0].id)
-      });
+    it('should delete the actual selected Post in Posts', () => {
+      component.deletePost(POSTS[1]);
+      for (let post of component.posts) {
+        expect(post).not.toEqual(POSTS[1]);
+      }
     });
 
-    it('should call the delete method in post service only once', () => {
+    it('should call the delete method in Post Service only once', () => {
+      component.deletePost(POSTS[1]);
       expect(mockPostService.deletePost).toHaveBeenCalledTimes(1);
     });
   });

@@ -18,7 +18,7 @@ import { SinglePostComponent } from './component/single-post/single-post/single-
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
