@@ -13,4 +13,8 @@ export class LoggerService {
   log(message: string) {
     this.message.push(message);
   }
+
+  clear() {
+    this.message = [];
+  }
 }
