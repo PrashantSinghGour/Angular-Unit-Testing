@@ -9,27 +9,27 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('PostComponent', () => {
   let component: PostComponent;
-  // let fixture: ComponentFixture<PostComponent>;
+  let fixture: ComponentFixture<PostComponent>;
   let posts: Post[] = [];
   let mockPostService: any;
   beforeEach(async () => {
-    mockPostService = jasmine.createSpyObj('PostService', ['getPost', 'deletePost']);
-    // await TestBed.configureTestingModule({
-    //   declarations: [PostComponent],
-    //   providers: [{
-    //     provide: PostService,
-    //     useValue: mockPostService
-    //   },
-    //     HttpClient
-    //   ],
-    //   imports: [HttpClientTestingModule]
-    // }).compileComponents();
+    mockPostService = jasmine.createSpyObj(['getPost', 'deletePost']);
+    await TestBed.configureTestingModule({
+      providers: [
+        PostComponent,
+        {
+          provide: PostService,
+          useValue: mockPostService
+        },
+      ],
+    }).compileComponents();
 
 
     // fixture = TestBed.createComponent(PostComponent);
     // component = fixture.componentInstance;
+    component = TestBed.inject(PostComponent);
     // fixture.detectChanges();
-    component = new PostComponent(mockPostService);
+    // component = new PostComponent(mockPostService);
     posts = [
       {
         id: 1,
