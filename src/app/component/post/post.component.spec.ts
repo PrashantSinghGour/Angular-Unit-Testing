@@ -7,6 +7,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, Input } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 
 
@@ -65,6 +66,15 @@ describe('Posts Component', () => {
     mockPostService.getPost.and.returnValue(of(POSTS));
     fixture.detectChanges(); // this triggers component `ngOnInit()`
     expect(component.posts.length).toBe(3);
+  });
+
+  it('should create a SinglePostComponent for each post', () => {
+    mockPostService.getPost.and.returnValue(of(POSTS));
+    fixture.detectChanges();
+    const debugElement = fixture.debugElement;
+    console.log("🚀 ~ file: post.component.spec.ts:75 ~ it ~ debugElement:", debugElement)
+    const divElement = debugElement.queryAll(By.css('.posts'));
+    expect(divElement.length).toBe(POSTS.length)
   });
 
   describe('delete', () => {

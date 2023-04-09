@@ -21,7 +21,6 @@ export class PostComponent implements OnInit {
     this.postService.getPost().subscribe({
       next: (result) => {
         this.posts = result;
-        console.log("🚀 ~ file: post.component.ts:28 ~ PostComponent ~ this.postService.getPost ~ result:", result)
       }, error: (error) => {
         console.error(error);
       }
