@@ -6,8 +6,10 @@ import { Post } from 'src/app/models/Post';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input } from '@angular/core';
+import { Component, DebugElement, Input } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { SinglePostComponent } from '../single-post/single-post/single-post.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 
 
@@ -49,13 +51,15 @@ describe('Posts Component', () => {
     mockPostService = jasmine.createSpyObj(['getPost', 'deletePost']);
 
     TestBed.configureTestingModule({
-      declarations: [PostComponent, FakeSinglePostComponent],
+      // declarations: [PostComponent, FakeSinglePostComponent],
+      declarations: [PostComponent, SinglePostComponent],
       providers: [
         {
           provide: PostService,
           useValue: mockPostService,
         },
       ],
+      imports: [RouterTestingModule]
     });
 
     fixture = TestBed.createComponent(PostComponent);
@@ -72,10 +76,27 @@ describe('Posts Component', () => {
     mockPostService.getPost.and.returnValue(of(POSTS));
     fixture.detectChanges();
     const debugElement = fixture.debugElement;
-    console.log("🚀 ~ file: post.component.spec.ts:75 ~ it ~ debugElement:", debugElement)
     const divElement = debugElement.queryAll(By.css('.posts'));
     expect(divElement.length).toBe(POSTS.length)
   });
+
+  it('should create a SinglePostComponent for each post by directive', () => {
+    mockPostService.getPost.and.returnValue(of(POSTS));
+    fixture.detectChanges();
+    const debugElement = fixture.debugElement;
+    const divElement = debugElement.queryAll(By.directive(SinglePostComponent));
+    expect(divElement.length).toBe(POSTS.length)
+  });
+
+  it('should set the post data correctly in each child component', () => {
+    mockPostService.getPost.and.returnValue(of(POSTS));
+    fixture.detectChanges();
+    const singlePostComponentDEs = fixture.debugElement.queryAll(By.directive(SinglePostComponent));
+    singlePostComponentDEs.forEach((singlePostComponentDE: DebugElement, index: number) => {
+      const singlePostComponentInstance = singlePostComponentDE.componentInstance as SinglePostComponent;
+      expect(singlePostComponentInstance.post.title).toEqual(POSTS[index].title);
+    })
+  })
 
   describe('delete', () => {
     beforeEach(() => {
