@@ -6,15 +6,17 @@ import { LoggerService } from '../logger/logger.service';
 describe('CalculatorService', () => {
   let service: CalculatorService;
   let mockLoggerService: LoggerService;
-  // let loggerService: LoggerService;
   beforeEach(() => {
-    // TestBed.configureTestingModule({
-    //   providers: []
-    // });
-    // service = TestBed.inject(CalculatorService);
-    // loggerService = new LoggerService();
     mockLoggerService = jasmine.createSpyObj('LoggerService', ['log']);
-    service = new CalculatorService(mockLoggerService);
+    TestBed.configureTestingModule({
+      providers: [CalculatorService,
+        {
+          provide: LoggerService,
+          useValue: mockLoggerService
+        }
+      ]
+    });
+    service = TestBed.inject(CalculatorService);
   });
 
   it('should be created', () => {
