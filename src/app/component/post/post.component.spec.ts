@@ -119,5 +119,28 @@ describe('Posts Component', () => {
       component.deletePost(POSTS[1]);
       expect(mockPostService.deletePost).toHaveBeenCalledTimes(1);
     });
+
+    it('should call delete method on click of single post component button click', () => { // child component to parent component test
+      spyOn(component, 'deletePost');
+      mockPostService.getPost.and.returnValue(of(POSTS));
+      fixture.detectChanges();
+
+      const singlePostComponentDEs = fixture.debugElement.queryAll(By.directive(SinglePostComponent));
+      singlePostComponentDEs[0].query(By.css('button')).triggerEventHandler('click', { preventDefault: () => { } });
+
+      expect(component.deletePost).toHaveBeenCalledOnceWith(POSTS[0]);
+    });
+
+    it('should call delete method on click of single post component by emit event', () => { // child component to parent component test
+      spyOn(component, 'deletePost');
+      mockPostService.getPost.and.returnValue(of(POSTS));
+      fixture.detectChanges();
+
+      const singlePostComponentDEs = fixture.debugElement.queryAll(By.directive(SinglePostComponent));
+      (singlePostComponentDEs[0].componentInstance as SinglePostComponent).delete.emit();
+      expect(component.deletePost).toHaveBeenCalledTimes(1);
+      expect(component.deletePost).toHaveBeenCalledWith(POSTS[0]);
+    });
   });
+
 });

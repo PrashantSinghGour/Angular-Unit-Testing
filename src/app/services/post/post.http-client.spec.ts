@@ -48,4 +48,14 @@ describe('post service using HttpTestController and HttpClientTestingModule', ()
     expect(req.request.method).toBe('GET');
   });
 
+  it('should call method only once', () => {
+    postService.getSinglePost(1).subscribe();
+    // postService.getSinglePost(2).subscribe();
+
+    const req = httpTestingController.expectOne('https://jsonplaceholder.typicode.com/posts/1');
+    expect(req.request.method).toBe('GET');
+
+    httpTestingController.verify(); // to verify if any other api called other than the expected in `expectOn`.
+  });
+
 })
